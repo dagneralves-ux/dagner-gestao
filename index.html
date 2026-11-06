@@ -2976,6 +2976,7 @@ body:has(#v72-bar.on) #v68-fab{display:none}
 @media(max-width:600px){#v72-bar{width:calc(100vw - 24px);gap:8px;padding:10px;border-radius:18px}#v72-bar strong{flex:1 1 100%;text-align:center}#v72-bar select{flex:1 1 0;min-width:0}#v72-bar .btn{padding:0 12px;flex:0 0 auto}}
 
 </style>
+<style id="v75-css">#setup-guia div{min-width:0}#setup-sql{max-width:100%;box-sizing:border-box;white-space:pre}</style>
 </head>
 <body>
 <div class="v34-grid" aria-hidden="true"></div>
@@ -3198,7 +3199,7 @@ body:has(#v72-bar.on) #v68-fab{display:none}
 
 <!-- ══ SETUP ══ -->
 <div id="setup-screen" style="display:none;position:fixed;inset:0;z-index:500;background:#050505;align-items:center;justify-content:center;padding:20px">
-  <div style="background:rgba(10,10,10,0.85);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:36px 32px;width:100%;max-width:540px;box-shadow:0 24px 80px rgba(0,0,0,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:mdIn .3s cubic-bezier(.34,1.56,.64,1)">
+  <div style="background:rgba(10,10,10,0.85);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:28px 24px;width:100%;max-width:540px;max-height:calc(100dvh - 40px);overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:mdIn .3s cubic-bezier(.34,1.56,.64,1)">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
       <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#E8EBF0,#E8EBF0);display:flex;align-items:center;justify-content:center;font-family:Syne,sans-serif;font-weight:800;font-size:14px;color:#fff;box-shadow:0 0 16px rgba(0,0,0,.6)">DD</div>
       <div>
@@ -3209,7 +3210,19 @@ body:has(#v72-bar.on) #v68-fab{display:none}
     <div style="font-family:Syne,sans-serif;font-size:18px;font-weight:700;color:#EEF2FF;margin-bottom:6px">⚡ Conectar ao Supabase</div>
     <div style="font-size:13px;color:#8896B3;margin-bottom:20px;line-height:1.6">Banco de dados gratuito online. Leva ~5 min de configuração.</div>
     
-    <div style="display:flex;gap:12px;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);margin-bottom:8px;font-size:13px">
+    <div id="setup-err" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:10px 13px;font-size:13px;color:#fca5a5;margin-bottom:13px"></div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
+      <label style="font-size:11px;font-weight:600;color:#8896B3;text-transform:uppercase;letter-spacing:.07em">Project URL</label>
+      <input id="setup-url" type="url" placeholder="https://xxxxxxxxxxx.supabase.co" style="background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 12px;color:#EEF2FF;font-size:13px;font-family:Barlow,sans-serif;outline:none;width:100%;transition:border-color .2s" onfocus="this.style.borderColor='rgba(255,255,255,.28)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">
+      <label style="font-size:11px;font-weight:600;color:#8896B3;text-transform:uppercase;letter-spacing:.07em">Publishable Key</label>
+      <input id="setup-key" type="text" placeholder="sb_publishable_..." style="background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 12px;color:#EEF2FF;font-size:13px;font-family:Barlow,sans-serif;outline:none;width:100%;transition:border-color .2s" onfocus="this.style.borderColor='rgba(255,255,255,.28)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+    </div>
+    <button onclick="saveSetup()" style="width:100%;padding:11px;border-radius:8px;border:none;cursor:pointer;font-family:Barlow,sans-serif;font-size:13px;font-weight:600;background:linear-gradient(135deg,#E8EBF0,#E8EBF0);color:#fff;box-shadow:0 0 16px rgba(154,160,171,0.3)">
+      ✓ Salvar e continuar
+    </button>
+    <details id="setup-guia" style="margin-top:18px"><summary style="cursor:pointer;font-size:13px;color:#8896B3;padding:8px 0">Primeira vez? Ver como criar o banco</summary><div style="margin-top:10px"><div style="display:flex;gap:12px;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);margin-bottom:8px;font-size:13px">
       <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#E8EBF0,#E8EBF0);color:#fff;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div>
       <div style="color:#8896B3;line-height:1.6">Acesse <a href="https://supabase.com" target="_blank" style="color:#E8EBF0;text-decoration:none">supabase.com</a> → <strong style="color:#EEF2FF">Start your project</strong> → crie conta gratuita.</div>
     </div>
@@ -3219,7 +3232,7 @@ body:has(#v72-bar.on) #v68-fab{display:none}
     </div>
     <div style="display:flex;gap:12px;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);margin-bottom:8px;font-size:13px">
       <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#E8EBF0,#E8EBF0);color:#fff;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">3</div>
-      <div style="color:#8896B3;line-height:1.6"><strong style="color:#EEF2FF">SQL Editor → New query</strong> → cole e execute:<pre style="background:#0C1020;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:10px;font-size:10.5px;color:#E8EBF0;overflow-x:auto;margin-top:6px;line-height:1.6">-- ── Tabela clientes ──
+      <div style="color:#8896B3;line-height:1.6"><strong style="color:#EEF2FF">SQL Editor → New query</strong> → cole e execute:<pre id="setup-sql" style="max-height:150px;overflow:auto;background:#0C1020;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:10px;font-size:10.5px;color:#E8EBF0;overflow-x:auto;margin-top:6px;line-height:1.6">-- ── Tabela clientes ──
 CREATE TABLE clientes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -3303,25 +3316,14 @@ CREATE TABLE pagamentos (
 ALTER TABLE pagamentos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "user_owns_pagamentos" ON pagamentos
   FOR ALL USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);</pre></div>
+  WITH CHECK (auth.uid() = user_id);</pre><button type="button" onclick="(function(b){var t=document.getElementById('setup-sql').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='Copiado'},function(){var r=document.createRange();r.selectNodeContents(document.getElementById('setup-sql'));var x=getSelection();x.removeAllRanges();x.addRange(r);b.textContent='Selecionado: use Ctrl+C'})})(this)" style="margin-top:8px;padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:transparent;color:#EEF2FF;font-size:12px;cursor:pointer">Copiar SQL</button></div>
     </div>
     <div style="display:flex;gap:12px;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);margin-bottom:20px;font-size:13px">
       <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#E8EBF0,#E8EBF0);color:#fff;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">4</div>
       <div style="color:#8896B3;line-height:1.6"><strong style="color:#EEF2FF">Project Settings → API</strong> → copie a <strong style="color:#EEF2FF">Project URL</strong> e a <strong style="color:#EEF2FF">Publishable key</strong> abaixo.</div>
     </div>
 
-    <div id="setup-err" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:10px 13px;font-size:13px;color:#fca5a5;margin-bottom:13px"></div>
-    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
-      <label style="font-size:11px;font-weight:600;color:#8896B3;text-transform:uppercase;letter-spacing:.07em">Project URL</label>
-      <input id="setup-url" type="url" placeholder="https://xxxxxxxxxxx.supabase.co" style="background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 12px;color:#EEF2FF;font-size:13px;font-family:Barlow,sans-serif;outline:none;width:100%;transition:border-color .2s" onfocus="this.style.borderColor='rgba(255,255,255,.28)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
-    </div>
-    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:18px">
-      <label style="font-size:11px;font-weight:600;color:#8896B3;text-transform:uppercase;letter-spacing:.07em">Publishable Key</label>
-      <input id="setup-key" type="text" placeholder="sb_publishable_..." style="background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 12px;color:#EEF2FF;font-size:13px;font-family:Barlow,sans-serif;outline:none;width:100%;transition:border-color .2s" onfocus="this.style.borderColor='rgba(255,255,255,.28)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
-    </div>
-    <button onclick="saveSetup()" style="width:100%;padding:11px;border-radius:8px;border:none;cursor:pointer;font-family:Barlow,sans-serif;font-size:13px;font-weight:600;background:linear-gradient(135deg,#E8EBF0,#E8EBF0);color:#fff;box-shadow:0 0 16px rgba(154,160,171,0.3)">
-      ✓ Salvar e continuar
-    </button>
+    </div></details>
   </div>
 </div>
 
@@ -3409,7 +3411,7 @@ CREATE POLICY "user_owns_pagamentos" ON pagamentos
       </div>
       <div class="logo-copy">
         <span class="logo-name">DAGNER DESIGN</span>
-        <span class="logo-sub">Gestão v74.0</span>
+        <span class="logo-sub">Gestão v75.0</span>
       </div>
     </div>
     <nav class="tabs">

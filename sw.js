@@ -1,5 +1,5 @@
 /* Service worker — DS Gestão. Dados ficam no Supabase (nunca em cache aqui). */
-const VERSION = 'ds-v74';
+const VERSION = 'ds-v75';
 const CORE = ['./', 'index.html', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo.svg', 'icons/logo-branco.svg'];
 
 self.addEventListener('install', e => {
