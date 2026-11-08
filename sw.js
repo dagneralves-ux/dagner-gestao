@@ -1,6 +1,6 @@
 /* Service worker — DS Gestão. Dados ficam no Supabase (nunca em cache aqui). */
-const VERSION = 'ds-v75';
-const CORE = ['./', 'index.html', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo.svg', 'icons/logo-branco.svg'];
+const VERSION = 'ds-v103-client-status-inline-20261108';
+const CORE = ['./', 'index.html', 'manifest.json', 'v100.css', 'v102.css', 'v100.js', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo.png', 'icons/logo.svg', 'icons/logo-branco.svg', 'icons/favicon-32.png', 'icons/favicon-64.png', 'icons/apple-touch-icon.png', 'icons/maskable-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

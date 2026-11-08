@@ -1,0 +1,57 @@
+DS Gestão V100 | Atualização de UI/UX com base na V99
+
+Esta é a versão completa do sistema, preservando os clientes, entregas, pagamentos,
+logo DAGNER, cronômetro e os recursos das versões anteriores.
+
+NOVIDADES V100
+1. Início: painel compacto "O que precisa de atenção", com atalhos para artes do dia,
+   tarefas atrasadas e cobranças vencidas ou com vencimento hoje.
+2. Menu: nomes acessíveis nos ícones, indicação da aba ativa e navegação por setas
+   quando o menu está focado, sem voltar com preenchimento branco.
+3. Tarefas: filtros Todas/Hoje/Atrasadas/Próximas/Concluídas; edição rápida de descrição,
+   data e cliente; prioridade Alta/Normal/Baixa e ação para reabrir concluídas.
+4. Calendário: alternância entre grade mensal e lista Agenda; clicar no item abre o
+   detalhamento do dia. A agenda carrega as tarefas do mês visível.
+5. Produção: filtros por clientes com pendências, atrasos ou tudo concluído, além de busca.
+   Os quadrados coloridos de Semana e as datas seguidas no Mês continuam como na V99.
+6. Financeiro: explicação do significado dos indicadores e filtro por status da cobrança.
+9. Confirmação antes da exclusão de tarefas e aviso com "Desfazer" ao concluir tarefas.
+10. Padrões de espaçamento, raio de cantos, botões, foco e contraste foram reunidos
+    em v100.css, para evitar conflito com as regras anteriores.
+
+DADOS E SINCRONIZAÇÃO
+* O esquema/tabelas Supabase existentes NÃO foram modificados.
+* Título, cliente, data e status da tarefa continuam usando o armazenamento original,
+  com Supabase quando disponível e fallback local quando não há tabela/conexão.
+* A prioridade das tarefas é uma informação de interface, salva localmente neste
+  navegador para cada usuário. Não sincroniza entre dispositivos sem ampliação do banco.
+* O cronômetro permanece local como na V99; o tempo não vai automaticamente para o banco.
+* Concluídas mostra até as 100 mais recentes consultadas no período.
+* A atualização não apaga dados já cadastrados.
+
+PUBLICAÇÃO
+1. Envie TODOS os arquivos deste ZIP ao Netlify, incluindo index.html, v100.css,
+   v100.js, manifest.json, sw.js, tema-ambar-2026.css e a pasta icons.
+2. Atualize a página com Ctrl + F5. O service worker usa uma nova versão de cache.
+3. Caso o ícone do app no dispositivo continue antigo, remova o atalho e reinstale.
+
+VALIDAÇÃO
+Sintaxe de todos os scripts verificada e fluxos principais testados em navegador
+isolado com dados simulados em desktop e celular. O Supabase real não foi acessado.
+
+
+DS GESTÃO V102 | CORREÇÃO DO CABEÇALHO DOS CLIENTES
+- Ações dos cards de clientes agora ficam em uma linha exclusiva, sem sobreposição com nome, logo ou status.
+- Layout responsivo e modo lista preservados.
+- Tooltips continuam visíveis acima dos botões.
+- v102.css é carregado após v100.css para sobrescrever somente o layout dos clientes.
+- Cache do app atualizado em sw.js para receber a nova versão.
+- Dados e operações do Supabase não foram alterados.
+
+
+DS GESTÃO V103 | STATUS NA LINHA DOS ÍCONES
+- Status Ativo/Pausado/Encerrado à esquerda na barra superior de ações.
+- Nome, responsável e logo na linha de baixo.
+- Botões preservados, com espaçamento responsivo para cards estreitos.
+- v102.css revisado e atualizado para v=103; service worker atualizado.
+- Sem mudança nas tabelas ou dados do Supabase.
