@@ -1,9 +1,12 @@
 /* Service worker — DS Gestão. Dados ficam no Supabase (nunca em cache aqui). */
-const VERSION = 'ds-v103-client-status-inline-20261108';
+const VERSION = 'ds-v104-limpeza-20261109';
 const CORE = ['./', 'index.html', 'manifest.json', 'v100.css', 'v102.css', 'v100.js', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo.png', 'icons/logo.svg', 'icons/logo-branco.svg', 'icons/favicon-32.png', 'icons/favicon-64.png', 'icons/apple-touch-icon.png', 'icons/maskable-512.png'];
 
+/* bibliotecas locais (opcionais: se o arquivo não existir, o app usa o CDN) */
+const LIBS = ['libs/supabase.min.js', 'libs/jspdf.umd.min.js', 'libs/jspdf.plugin.autotable.min.js', 'libs/tabler/tabler-icons.min.css'];
+
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE).then(() => Promise.all(LIBS.map(u => c.add(u).catch(() => {}))))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(
@@ -22,8 +25,8 @@ self.addEventListener('fetch', e => {
     // rede primeiro (pega versão nova), cache como reserva
     e.respondWith(
       fetch(req).then(res => {
-        const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); return res;
-      }).catch(() => caches.match(req).then(r => r || caches.match('index.html')))
+        if (res && res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); } return res;
+      }).catch(() => caches.match(req, {ignoreSearch:true}).then(r => r || caches.match('index.html')))
     );
   } else if (cdn) {
     // bibliotecas e fontes: abre do cache e atualiza por trás

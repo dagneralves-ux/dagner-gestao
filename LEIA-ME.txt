@@ -1,4 +1,15 @@
-DS Gestão V100 | Atualização de UI/UX com base na V99
+V104 - LIMPEZA DO APP (visual mantido)
+- Conexão salva não é mais apagada quando a internet cai ou demora: o app mostra "Sem conexão" e tenta de novo sozinho. Só apaga URL/chave se o erro for de chave inválida.
+- 16 chamadas de rede a getUser() trocadas por authUser(), que lê a sessão local (salvar e carregar ficam mais rápidos).
+- SINCRONIZAÇÃO TOTAL: prioridade das tarefas e cronômetro agora sincronizam entre celular e PC (usam a tabela "configuracoes" que já existe do v69; nenhum SQL novo). Atualiza ao voltar para o app e a cada 30 s.
+- Escape de HTML: letra inicial do avatar da empresa; demais campos revisados.
+- CSS: 954 declarações que eram sobrescritas por regras idênticas e nunca tinham efeito foram removidas (-44 KB). Comparação de estilos de ~54 mil elementos e de capturas de 28 telas (celular/desktop, escuro/claro): sem diferença.
+- Fonte: rótulo dos dias da semana em Produção de 7px para 9px.
+- Service worker: não guarda respostas com erro no cache; cache offline ignora o ?v=; versão ds-v104.
+- Arquivo tema-ambar-2026.css removido (já estava dentro do index.html e não era usado).
+- Bibliotecas: o app tenta primeiro a pasta libs/ e cai para o CDN se o arquivo não existir. Veja libs/COMO-BAIXAR.txt.
+
+V100 | Atualização de UI/UX com base na V99
 
 Esta é a versão completa do sistema, preservando os clientes, entregas, pagamentos,
 logo DAGNER, cronômetro e os recursos das versões anteriores.
@@ -31,7 +42,7 @@ DADOS E SINCRONIZAÇÃO
 
 PUBLICAÇÃO
 1. Envie TODOS os arquivos deste ZIP ao Netlify, incluindo index.html, v100.css,
-   v100.js, manifest.json, sw.js, tema-ambar-2026.css e a pasta icons.
+   v100.js, manifest.json, sw.js, a pasta libs e a pasta icons.
 2. Atualize a página com Ctrl + F5. O service worker usa uma nova versão de cache.
 3. Caso o ícone do app no dispositivo continue antigo, remova o atalho e reinstale.
 

@@ -1,0 +1,20 @@
+BIBLIOTECAS LOCAIS (opcional, mas recomendado)
+
+O app já está pronto para usar estes arquivos desta pasta. Se algum não existir, ele usa o CDN como antes, então nada quebra.
+Baixe cada arquivo pelo navegador (botão direito > Salvar link como) e salve com o nome indicado:
+
+1) https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js
+   salvar como: libs/supabase.min.js
+2) https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+   salvar como: libs/jspdf.umd.min.js
+3) https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js
+   salvar como: libs/jspdf.plugin.autotable.min.js
+4) https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css
+   salvar como: libs/tabler/tabler-icons.min.css
+5) Fontes dos ícones (3 arquivos), salvar em libs/tabler/fonts/ com o mesmo nome:
+   https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/fonts/tabler-icons.woff2
+   https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/fonts/tabler-icons.woff
+   https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/fonts/tabler-icons.ttf
+
+Depois suba a pasta libs junto com o resto no GitHub. Os arquivos entram no cache offline do app sozinhos.
+Se aparecerem ícones quadrados depois de subir, confira se os 3 arquivos de fonte do item 5 estão em libs/tabler/fonts/.

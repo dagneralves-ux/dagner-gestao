@@ -222,7 +222,7 @@ function renderCompleted(){
 async function loadCompleted(){
   if(typeof tarefasUseDb!=='undefined'&&tarefasUseDb&&typeof sb!=='undefined'&&sb){
     try{
-      const {data:{user}}=await sb.auth.getUser();if(!user)throw new Error('Sessão não encontrada');
+      const {data:{user}}=await authUser();if(!user)throw new Error('Sessão não encontrada');
       const {data,error}=await sb.from('tarefas').select('*').eq('user_id',user.id).eq('concluida',true).order('data_tarefa',{ascending:false}).limit(100);
       if(error)throw error;
       state.doneTasks=(data||[]).map(r=>({id:r.id,texto:r.texto,clienteId:r.cliente_id||null,concluida:true,dataTarefa:r.data_tarefa}));
@@ -370,5 +370,11 @@ const origRefresh=window.refreshData;
 if(typeof origRefresh==='function')window.refreshData=async function(){const r=await origRefresh.apply(this,arguments);renderFocus();return r;};
 const origRenderToday=window.renderHoje;
 if(typeof origRenderToday==='function')window.renderHoje=function(){const r=origRenderToday.apply(this,arguments);renderFocus();return r;};
+/* V104: prioridade mudou em outro aparelho (chega pela sincronização) */
+window.addEventListener('ds-cfg-pulled',function(e){
+  if(!e.detail||e.detail.key!=='ds_v100_priorities')return;
+  try{if(document.getElementById('sec-tarefas')?.classList.contains('active')&&typeof window.renderTarefasPendentes==='function')window.renderTarefasPendentes();}catch(err){}
+  try{renderFocus();}catch(err){}
+});
 renderFocus();syncNavigation();
 })();
