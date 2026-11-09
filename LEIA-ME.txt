@@ -7,7 +7,7 @@ V104 - LIMPEZA DO APP (visual mantido)
 - Fonte: rótulo dos dias da semana em Produção de 7px para 9px.
 - Service worker: não guarda respostas com erro no cache; cache offline ignora o ?v=; versão ds-v104.
 - Arquivo tema-ambar-2026.css removido (já estava dentro do index.html e não era usado).
-- Bibliotecas: o app tenta primeiro a pasta libs/ e cai para o CDN se o arquivo não existir. Veja libs/COMO-BAIXAR.txt.
+- Bibliotecas locais incluídas na pasta libs/ (Supabase JS 2.119.0, jsPDF 2.5.1, autotable 3.8.2, Tabler Icons 2.47.0). O app usa a pasta libs/ e só cai para o CDN se algum arquivo faltar. Continua externo: a fonte Inter (Google Fonts) e as logos dos clientes (Supabase Storage).
 
 V100 | Atualização de UI/UX com base na V99
 
