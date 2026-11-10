@@ -1,5 +1,5 @@
 /* Service worker — DS Gestão. Dados ficam no Supabase (nunca em cache aqui). */
-const VERSION = 'ds-v105-20261110';
+const VERSION = 'ds-v106-20261110';
 const CORE = ['./', 'index.html', 'manifest.json', 'v100.css', 'v102.css', 'v100.js', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo.png', 'icons/logo.svg', 'icons/logo-branco.svg', 'icons/favicon-32.png', 'icons/favicon-64.png', 'icons/apple-touch-icon.png', 'icons/maskable-512.png'];
 
 /* bibliotecas locais (opcionais: se o arquivo não existir, o app usa o CDN) */

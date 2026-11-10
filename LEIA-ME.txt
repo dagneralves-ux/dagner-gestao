@@ -68,6 +68,12 @@ DS GESTÃO V103 | STATUS NA LINHA DOS ÍCONES
 - Sem mudança nas tabelas ou dados do Supabase.
 
 
+V106 | INTEGRAÇÃO COM O RELATPOST
+- Novo botão "Relatórios" (menu ⋯ do topo) abre o RelatPost; "Endereço do RelatPost" define o link (fica salvo na sua conta).
+- Em cada card de cliente, novo botão (gráfico) abre o RelatPost direto no cliente.
+- Clientes continuam cadastrados só aqui: o RelatPost lê a tabela "clientes" do mesmo Supabase (sem SQL novo).
+
+
 V105 | ALERTAS DE COBRANÇA + NOVA IDENTIDADE
 - Cards "Cobrança de ... vence hoje" na tela Início agora ocupam uma célula da grade, com o mesmo tamanho dos cards de tarefas (antes esticavam a linha toda).
 - Todos os ícones e logos (app, favicon, apple-touch, maskable, logo.png, logo.svg, logo-branco.svg) trocados pela marca DAGNER amarela.

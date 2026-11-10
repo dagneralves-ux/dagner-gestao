@@ -2771,6 +2771,12 @@ CREATE POLICY "user_owns_pagamentos" ON pagamentos
         <span class="backup-status-dot"></span>
         <span class="backup-status-text">Backup: nunca</span>
       </span>
+      <button class="btn btn-rel" onclick="openRelat()" data-tip="Abrir RelatPost (relatórios de posts)">
+        <i class="ti ti-chart-bar"></i><span class="btn-txt">Relatórios</span>
+      </button>
+      <button class="btn btn-rel-cfg" onclick="setRelatUrl()" data-tip="Endereço do RelatPost">
+        <i class="ti ti-link"></i><span class="btn-txt">Endereço do RelatPost</span>
+      </button>
       <button class="btn btn-bkp" onclick="backupData()" data-tip="Criar backup">
         <i class="ti ti-device-floppy"></i><span class="btn-txt">Backup</span>
       </button>
@@ -4312,6 +4318,7 @@ async function refreshData(silent){
 async function enterApp(user){
   window.dsGreetingName=String(user?.user_metadata?.first_name||user?.user_metadata?.full_name?.trim().split(/\s+/)[0]||'Dagner').slice(0,32);
   _appUserId=user.id;
+  try{ var ru=user.user_metadata&&user.user_metadata.relat_url; if(ru&&!relatUrl()) localStorage.setItem('ds_relat_url',ru); }catch(e){}
   document.getElementById('auth-screen').style.display='none';
   const pill=document.getElementById('user-pill'); const lbl=document.getElementById('user-email-lbl');
   if(pill) pill.style.display='inline-flex'; if(lbl) lbl.textContent=user.email;
@@ -5510,6 +5517,7 @@ function renderClientes(){
           <div class="card-btns">
             <button class="btn btn-icon btn-recibo" onclick="openReciboModal('${c.id}')" data-tip="Emitir recibo"><i class="ti ti-receipt"></i></button>
             <button class="btn btn-icon btn-wpp-sm" onclick="wppCliente('${c.id}')" data-tip="Abrir WhatsApp"><i class="ti ti-brand-whatsapp"></i></button>
+            <button class="btn btn-icon" onclick="openRelat('${c.id}')" data-tip="Relatório de posts (RelatPost)"><i class="ti ti-chart-bar"></i></button>
             <button class="btn btn-icon" onclick="v61OpenBr('${c.id}')" data-tip="Briefing do cliente"><i class="ti ti-notes"></i></button>
             <button class="btn btn-icon btn-edit" onclick="openModal('${c.id}')" data-tip="Editar cliente"><i class="ti ti-pencil"></i></button>
             <button class="btn btn-icon btn-del" onclick="confirmDelete('${c.id}')" data-tip="Excluir cliente"><i class="ti ti-trash"></i></button>
@@ -5937,6 +5945,23 @@ async function doDelete(){
 }
 
 /* ── WHATSAPP ── */
+/* ── integração com o RelatPost ── */
+function relatUrl(){ try{ return localStorage.getItem('ds_relat_url')||''; }catch(e){ return ''; } }
+function setRelatUrl(){
+  var v=prompt('Endereço do RelatPost (ex.: https://meu-relatpost.netlify.app):', relatUrl());
+  if(v===null) return false;
+  var u=v.trim().replace(/\/+$/,'');
+  if(u && !/^https?:\/\/.+\..+/i.test(u)){ toast('Endereço inválido','err'); return false; }
+  try{ localStorage.setItem('ds_relat_url',u); }catch(e){}
+  try{ if(sb) sb.auth.updateUser({data:{relat_url:u}}); }catch(e){}
+  toast(u?'Endereço do RelatPost salvo':'Endereço removido');
+  return true;
+}
+function openRelat(id){
+  var u=relatUrl();
+  if(!u){ setRelatUrl(); u=relatUrl(); if(!u) return; }
+  window.open(u+(id?'#cliente='+encodeURIComponent(id):''),'_blank','noopener');
+}
 function wppCliente(id){
   const c=clientes.find(x=>x.id===id);if(!c) return;
   let msg=`🎨 *DAGNER DESIGN*\n\n*Empresa:* ${c.empresa}\n*Responsável:* ${c.responsavel}\n`;
@@ -7783,7 +7808,7 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
     tg.setAttribute('data-tip','Mais ações'); tg.setAttribute('aria-label','Mais ações'); tg.innerHTML='<i class="ti ti-dots"></i>';
     var pop=document.createElement('div'); pop.className='hdr-more-pop';
     var bs=document.getElementById('backup-status'); if(bs) pop.appendChild(bs);
-    ['.btn-wpp','.btn-pdf','.btn-bkp','.btn-rst'].forEach(function(sel){
+    ['.btn-wpp','.btn-pdf','.btn-rel','.btn-rel-cfg','.btn-bkp','.btn-rst'].forEach(function(sel){
       var b=act.querySelector(sel); if(b){b.removeAttribute('data-tip'); pop.appendChild(b);}
     });
     more.appendChild(tg); more.appendChild(pop);
