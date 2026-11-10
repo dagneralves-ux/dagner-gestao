@@ -66,3 +66,17 @@ DS GESTÃO V103 | STATUS NA LINHA DOS ÍCONES
 - Botões preservados, com espaçamento responsivo para cards estreitos.
 - v102.css revisado e atualizado para v=103; service worker atualizado.
 - Sem mudança nas tabelas ou dados do Supabase.
+
+
+V105 | ALERTAS DE COBRANÇA + NOVA IDENTIDADE
+- Cards "Cobrança de ... vence hoje" na tela Início agora ocupam uma célula da grade, com o mesmo tamanho dos cards de tarefas (antes esticavam a linha toda).
+- Todos os ícones e logos (app, favicon, apple-touch, maskable, logo.png, logo.svg, logo-branco.svg) trocados pela marca DAGNER amarela.
+- Cache atualizado (ds-v105) e ?v=105 nos arquivos.
+- (V105) Aviso "Cobrança de ... vence hoje" removido da tela Início.
+- (V105) Financeiro: seções "Vence hoje" e "Atrasados" agora usam o mesmo formato compacto de "A vencer este mês" (nome, dia, WhatsApp, recibo, Pago e valor numa linha). Atrasados em vermelho, hoje em verde.
+- (V105) Início: o dia da semana (TER, QUA...) e o rótulo "Concluída" agora ficam ao lado do círculo de marcar, e o card de tarefa ficou mais baixo (~100px em vez de 134px).
+- (V105) Início: barra de progresso do dia agora se estende até perto do círculo de porcentagem.
+- (V105) Fonte Inter agora local (libs/fonts/, pesos 400-800, subconjunto latino); removidos @import do Google Fonts e preconnect. Cache offline inclui as fontes.
+- (V105) Código sem uso removido: rowAberto (Financeiro), cobBtns (botão WhatsApp antigo), CSS .cobr-alert/.v67-cob.
+- (V105) CSS: 7 regras duplicadas e 24 regras totalmente sobrescritas removidas (-1,7 KB). Verificado: estilos computados de 2009 elementos x 4 combinações (desktop/celular, escuro/claro) sem nenhuma diferença.
+- (V105) Fonte padronizada: Syne e Barlow substituídas por Inter em todo o app.
