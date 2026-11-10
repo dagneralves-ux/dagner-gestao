@@ -99,18 +99,28 @@ html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-c
 html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-resp {
   overflow-wrap: anywhere !important;
 }
-/* Labels flutuam sobre os botões sem serem recortados pelo cartão. */
+/* Labels aparecem ABAIXO dos botões, dentro da tela: nunca cortam no topo do cartão. */
 html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-btns [data-tip]::after {
-  top: -8px !important;
+  top: calc(100% + 8px) !important;
   bottom: auto !important;
   left: 50% !important;
   z-index: 99 !important;
-  transform: translate(-50%,-100%) scale(.96) !important;
+  white-space: nowrap !important;
+  transform: translate(-50%,0) scale(.96) !important;
 }
 html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-btns [data-tip]:hover::after,
 html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-btns [data-tip]:focus-visible::after {
   opacity: 1 !important;
-  transform: translate(-50%,-100%) scale(1) !important;
+  transform: translate(-50%,0) scale(1) !important;
+}
+/* os dois últimos botões alinham pela direita para não passar da borda da tela */
+html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-btns .btn:nth-last-child(-n+2)[data-tip]::after {
+  left: auto !important; right: 0 !important;
+  transform: translate(0,0) scale(.96) !important;
+}
+html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-btns .btn:nth-last-child(-n+2)[data-tip]:hover::after,
+html[data-theme] #sec-clientes #clients-grid .client-card.compact-client .card-btns .btn:nth-last-child(-n+2)[data-tip]:focus-visible::after {
+  transform: translate(0,0) scale(1) !important;
 }
 /* Modo Lista mantém nome, ações e detalhes na mesma faixa quando couber. */
 @media (min-width: 1050px) {
