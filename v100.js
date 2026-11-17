@@ -62,7 +62,6 @@ function focusData(){
 function renderFocus(){
   const host=$('v100-focus-grid');if(!host)return;
   const d=focusData();const tiles=[
-    {id:'arts',label:'Artes pendentes hoje',value:d.arts,icon:'ti-photo',sub:d.arts?'Acompanhar entregas':'Artes em dia',to:'hoje'},
     {id:'tasks',label:'Tarefas atrasadas',value:d.overdue,icon:'ti-alert-triangle',sub:d.overdue?'Organizar prioridades':'Nenhuma atrasada',to:'tarefas',urgent:d.overdue>0},
     {id:'finance',label:'Cobranças vencidas ou de hoje',value:d.invoices,icon:'ti-receipt',sub:d.invoices?'Conferir pagamentos':'Cobranças em dia',to:'cobranca',urgent:d.invoices>0}
   ];

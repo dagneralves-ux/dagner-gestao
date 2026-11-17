@@ -1,3 +1,11 @@
+V107 | ARTES ATRASADAS NA TELA INÍCIO
+- Em "Artes do dia", cada cliente que tem arte de hoje e ficou sem entrega em um dia anterior da mesma semana (SEG até ontem) mostra um chip vermelho com o dia (ex.: SEG) ao lado do chip de hoje.
+- Só aparece em cards pendentes; some quando a arte atrasada é marcada como entregue no Calendário.
+- Financeiro: "Confirmar pagamento" aceita 0,00 (pagamento sem valor). Só bloqueia campo vazio, texto inválido ou valor negativo.
+- Recibo redesenhado: fundo branco, cards pretos com detalhes dourados (#F0AF32), logo da marca (a mesma do perfil) dentro do quadrado amarelo no cabeçalho. Mesmos campos e dados de antes.
+- Início: removidos os cards de "Artes pendentes hoje" e "Artes de hoje" (fica só o aviso de artes do dia no topo).
+- Sem mudança no Supabase. Cache: ds-v107.
+
 V104 - LIMPEZA DO APP (visual mantido)
 - Conexão salva não é mais apagada quando a internet cai ou demora: o app mostra "Sem conexão" e tenta de novo sozinho. Só apaga URL/chave se o erro for de chave inválida.
 - 16 chamadas de rede a getUser() trocadas por authUser(), que lê a sessão local (salvar e carregar ficam mais rápidos).

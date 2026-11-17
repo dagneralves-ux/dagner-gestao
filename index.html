@@ -2406,6 +2406,13 @@ html[data-theme]:not(#v59) .client-card.compact-client [data-tip]:hover::after{o
 @media (max-width:900px){html[data-theme]:not(#v59) .client-card.compact-client .card-head{flex-direction:column !important}
 html[data-theme]:not(#v59) .client-card.compact-client .card-btns{width:100% !important}}
 </style>
+<style id="ds-v107-artes-atrasadas">
+/* V107: chips de arte atrasada (dia anterior da semana) em vermelho, ao lado do chip do dia */
+#sec-hoje #tasks-list .task-day-group{display:inline-flex !important;align-items:center !important;gap:4px !important;justify-self:end !important;align-self:center !important;grid-column:2 !important;grid-row:1 !important;margin-right:4px !important;line-height:1 !important}
+html[data-theme]:not(#v59) #sec-hoje #tasks-list .task-day-group .task-day-chip.late-chip,
+html[data-theme]:not(#v59) #sec-hoje .task-item:not(.done) .task-day-group .task-day-chip.late-chip{background:#D93A3A !important;border:1px solid #D93A3A !important;color:#FFFFFF !important;margin:0 !important;font-weight:800 !important;box-shadow:none !important}
+html[data-theme]:not(#v59) #sec-hoje #tasks-list .task-day-group .task-day-chip:not(.late-chip){margin:0 !important}
+</style>
 
 </head>
 <body>
@@ -2838,10 +2845,6 @@ CREATE POLICY "user_owns_pagamentos" ON pagamentos
     <div class="kpi" data-kpi-icon="ti ti-calendar-event">
       <div class="kpi-ic"><i class="ti ti-calendar-event"></i></div>
       <div class="kpi-meta"><span class="kpi-lbl">Entregas no mês</span><strong id="kpi-mes">–</strong><small id="kpi-mes-sub"></small></div>
-    </div>
-    <div class="kpi kpi-gold" data-kpi-icon="ti ti-stack-2">
-      <div class="kpi-ic"><i class="ti ti-stack-2"></i></div>
-      <div class="kpi-meta"><span class="kpi-lbl">Artes de hoje</span><strong id="kpi-hoje">–</strong><small id="kpi-hoje-sub">programadas para hoje</small></div>
     </div>
   </section>
   <div class="hoje-grid">
@@ -5180,6 +5183,21 @@ function clientesNoDia(ds){
   const d=new Date(ds+'T12:00:00'); const ourDay=jsToOurDay(d.getDay());
   return clientes.filter(c=>c.status==='ativo'&&c.dias.includes(ourDay));
 }
+/* V107: artes da semana atual (SEG até ontem) que ficaram sem entrega */
+function artesAtrasadasSemana(c, hojeDate){
+  const out=[];
+  const todayOur=jsToOurDay(hojeDate.getDay());
+  for(let back=todayOur; back>=1; back--){
+    const ourDay=todayOur-back;
+    const d=new Date(hojeDate.getFullYear(),hojeDate.getMonth(),hojeDate.getDate()-back,12);
+    const ds=dateStr(d.getFullYear(),d.getMonth()+1,d.getDate());
+    if(isBlockedDs(ds)) continue;
+    if(!c.dias.includes(ourDay)) continue;
+    if(isDone(ds,c.id)) continue;
+    out.push({label:DIAS_A[ourDay], nome:DIAS[ourDay]});
+  }
+  return out;
+}
 function greetingFromHour(){ const h=now().getHours(); return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'; }
 function fmtDateLong(date){
   const dias=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
@@ -5259,6 +5277,11 @@ function renderHoje(){
     const logoHtml=c.logoUrl
       ?`<img loading="lazy" decoding="async" src="${esc(c.logoUrl)}" style="width:28px;height:28px;border-radius:7px;object-fit:cover;flex-shrink:0">`
       :`<div style="width:28px;height:28px;border-radius:7px;background:${k.c};display:flex;align-items:center;justify-content:center;font-family:Inter,system-ui,sans-serif;font-weight:800;font-size:11px;color:#fff;flex-shrink:0">${esc(c.empresa.charAt(0))}</div>`;
+    const todayChip=`<span class="task-day-chip" style="background:${k.bg};border-color:${k.bo};color:${k.t}">${DIAS_A[jsToOurDay(today.getDay())]}</span>`;
+    const atrasadas=d?[]:artesAtrasadasSemana(c,today);
+    const chipsDia=atrasadas.length
+      ?`<span class="task-day-group">${atrasadas.map(x=>`<span class="task-day-chip late-chip" title="Arte atrasada: ${esc(x.nome)}">${x.label}</span>`).join('')}${todayChip}</span>`
+      :todayChip;
     el.innerHTML=`
       <div class="task-check"><i class="ti ti-check"></i></div>
       ${logoHtml}
@@ -5266,7 +5289,7 @@ function renderHoje(){
         <div class="task-empresa">${esc(c.empresa)}</div>
         <div class="task-resp">${esc(c.responsavel)}</div>
       </div>
-      <span class="task-day-chip" style="background:${k.bg};border-color:${k.bo};color:${k.t}">${DIAS_A[jsToOurDay(today.getDay())]}</span>
+      ${chipsDia}
       <span class="task-done-label">Concluída</span>`;
     list.appendChild(el);
   });
@@ -6554,6 +6577,26 @@ function reciboCalcTotal() {
    Usado tanto pelo preview (iframe) quanto pelo download,
    garantindo que preview e PDF final sejam idênticos.
 ══════════════════════════════════════════════════════ */
+/* V107: recibo no padrão visual do sistema: fundo branco, cards pretos com detalhes amarelos */
+function reciboLogoDataUrl() {
+  return new Promise(resolve => {
+    let src = 'icons/logo.png?v=105';
+    try { src = localStorage.getItem('ds_brand_logo_url') || src; } catch (e) {}
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 256; c.height = 256;
+        c.getContext('2d').drawImage(img, 0, 0, 256, 256);
+        resolve(c.toDataURL('image/png'));
+      } catch (e) { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
 async function buildReciboDoc() {
     if (!window.jspdf || !window.jspdf.jsPDF) {
       throw new Error('Biblioteca jsPDF não carregou. Verifique sua conexão com a internet e recarregue a página.');
@@ -6565,153 +6608,121 @@ async function buildReciboDoc() {
     const svcs     = todos.filter(sv => sv.nome || sv.desc || sv.valor);
     const total    = todos.reduce((s, sv) => s + reciboParseValor(sv.valor), 0);
     const totalFmt = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const logo     = await reciboLogoDataUrl();
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
-    const W = 210, H = 297, M = 16, CW = W - M * 2;
-    const AZUL   = [58, 115, 242];
-    const BRANCO = [255, 255, 255];
-    const CINZA  = [60, 60, 60];
-    const CINZA2 = [120, 120, 120];
-    const LINHA  = [190, 206, 245];
+    const W = 210, H = 297, M = 14, CW = W - M * 2;
+    const PAGINA = [255, 255, 255];
+    const PRETO  = [17, 17, 17];
+    const CARD   = [17, 18, 21];
+    const BORDA  = [46, 50, 58];
+    const LINHA  = [42, 46, 54];
+    const BRANCO = [245, 245, 247];
+    const CINZA  = [163, 168, 177];
+    const CINZA_ROT = [130, 136, 146];
+    const AMARELO= [240, 175, 50];
+    const AMARELO_BG = [36, 29, 12];
     const fill  = c => doc.setFillColor(c[0], c[1], c[2]);
     const draw  = c => doc.setDrawColor(c[0], c[1], c[2]);
     const ink   = c => doc.setTextColor(c[0], c[1], c[2]);
     const space = v => { if (doc.setCharSpace) doc.setCharSpace(v); };
+    const card  = (x, y, w, h, r, cor, borda) => {
+      fill(cor); draw(borda); doc.setLineWidth(0.3);
+      doc.roundedRect(x, y, w, h, r, r, 'FD');
+    };
+    const rotulo = (t, x, y, align, cor) => {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7); ink(cor || CINZA_ROT); space(0.8);
+      doc.text(t, x, y, align ? { align } : undefined); space(0);
+    };
 
-    // ── Cabeçalho azul com base arredondada ──
-    fill(AZUL);
-    doc.roundedRect(-12, -12, W + 24, 66, 24, 24, 'F');
+    // ── Fundo branco da página ──
+    fill(PAGINA); doc.rect(0, 0, W, H, 'F');
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(26);
-    ink(BRANCO);
-    doc.text('DAGNER DESIGN', M, 26);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    space(2.4);
-    doc.text('SERVIÇOS DE WEB DESIGNER', M, 34);
-    space(0);
-
+    // ── Cabeçalho preto com logo dentro do quadrado amarelo ──
+    card(M, M, CW, 36, 5, CARD, BORDA);
+    const LOGO = 24;
+    if (logo) {
+      doc.addImage(logo, 'PNG', M + 6, M + 6, LOGO, LOGO);
+    } else {
+      fill(AMARELO); doc.roundedRect(M + 6, M + 6, LOGO, LOGO, 4, 4, 'F');
+    }
+    const tx = M + 6 + LOGO + 8;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); ink(BRANCO);
+    doc.text('DAGNER DESIGN', tx, M + 15);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); ink(AMARELO); space(1.6);
+    doc.text('SERVIÇOS DE WEB DESIGNER', tx, M + 22); space(0);
     const contatos = ['(83) 9.9961-5408', '@dagner.design', 'dagnerdesign@gmail.com'];
-    doc.setFontSize(9);
-    contatos.forEach((t, i) => doc.text(t, W - M, 18 + i * 6.5, { align: 'right' }));
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); ink(CINZA);
+    contatos.forEach((t, i) => doc.text(t, W - M - 7, M + 13 + i * 6, { align: 'right' }));
 
-    // ── Título e data ──
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(42);
-    ink(CINZA);
-    doc.text('Recibo', W / 2, 92, { align: 'center' });
-
+    // ── Título e data em pílula amarela ──
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(28); ink(PRETO);
+    doc.text('RECIBO', M, 66);
     const dataTxt = String(data || '-').toUpperCase();
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    const dataW = doc.getTextWidth(dataTxt) + 10;
-    const dataX = W - M - dataW, dataY = 94, dataH = 9;
-    fill([20, 20, 20]);
-    doc.roundedRect(dataX, dataY, dataW, dataH, 4.5, 4.5, 'F');
-    ink(BRANCO);
-    doc.text(dataTxt, dataX + dataW / 2, dataY + 6.1, { align: 'center' });
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    const dataW = doc.getTextWidth(dataTxt) + 12;
+    const dataX = W - M - dataW;
+    fill(AMARELO); doc.roundedRect(dataX, 57, dataW, 9, 4.5, 4.5, 'F');
+    ink(PRETO); doc.text(dataTxt, dataX + dataW / 2, 63.1, { align: 'center' });
 
     // ── Cliente e contato ──
-    const linhaInfo = (label, valor, y) => {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      ink(CINZA);
-      doc.text(label + ':', M, y);
-      const w = doc.getTextWidth(label + ':') + 2;
-      doc.setFont('helvetica', 'normal');
-      doc.text(String(valor || '-').toUpperCase(), M + w, y);
-    };
-    linhaInfo('CLIENTE', cliente, 114);
-    linhaInfo('CONTATO', contato, 121);
+    const infoTop = 74;
+    card(M, infoTop, CW, 24, 5, CARD, BORDA);
+    rotulo('CLIENTE', M + 7, infoTop + 8);
+    rotulo('CONTATO', M + CW / 2 + 4, infoTop + 8);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); ink(BRANCO);
+    doc.text(String(cliente || '-').toUpperCase(), M + 7, infoTop + 16, { maxWidth: CW / 2 - 14 });
+    doc.text(String(contato || '-').toUpperCase(), M + CW / 2 + 4, infoTop + 16, { maxWidth: CW / 2 - 14 });
 
-    // ── Tabela: contorno azul arredondado + cabeçalho em pílula ──
-    const tY = 132;
-    const rowH = 13, headH = 10;
+    // ── Serviços em card preto com linhas separadoras ──
+    const top = infoTop + 24 + 8;
     const linhas = svcs.length ? svcs : [{ nome: '', desc: '', valor: '' }];
-    const bodyH = Math.max(56, linhas.length * rowH + 6);
-    const boxH = 14 + bodyH;
-    const bx = M - 4, bw = CW + 8;
-    draw(AZUL);
-    doc.setLineWidth(0.6);
-    doc.roundedRect(bx, tY, bw, boxH, 9, 9, 'S');
+    const rowH = 17;
+    const cardH = 11 + linhas.length * rowH + 3;
+    card(M, top, CW, cardH, 5, CARD, BORDA);
 
-    const px = bx + 4, pw = bw - 8;
-    const colP = [pw * 0.36, pw * 0.36, pw * 0.28];
-    const cX = [px, px + colP[0], px + colP[0] + colP[1]];
-
-    fill(AZUL);
-    doc.roundedRect(px, tY + 4, pw, headH, headH / 2, headH / 2, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    ink(BRANCO);
-    doc.text('SERVIÇO',   cX[0] + colP[0] / 2, tY + 10.8, { align: 'center' });
-    doc.text('DESCRIÇÃO', cX[1] + colP[1] / 2, tY + 10.8, { align: 'center' });
-    doc.text('VALOR',     cX[2] + colP[2] / 2, tY + 10.8, { align: 'center' });
-
-    const corpoTop = tY + 4 + headH + 3;
-    draw(LINHA);
-    doc.setLineWidth(0.3);
-    doc.line(cX[1], corpoTop - 2, cX[1], tY + boxH - 4);
-    doc.line(cX[2], corpoTop - 2, cX[2], tY + boxH - 4);
+    const x0 = M + 7, innerW = CW - 14;
+    const cX0 = x0, cX1 = x0 + innerW * 0.34, cX2 = x0 + innerW * 0.74, endX = x0 + innerW;
+    rotulo('SERVIÇO', cX0, top + 8, null, AMARELO);
+    rotulo('DESCRIÇÃO', cX1, top + 8, null, AMARELO);
+    rotulo('VALOR', endX, top + 8, 'right', AMARELO);
+    draw(LINHA); doc.setLineWidth(0.3);
+    doc.line(M + 4, top + 11, W - M - 4, top + 11);
 
     linhas.forEach((sv, i) => {
-      const y = corpoTop + 7 + i * rowH;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9.5);
-      ink(CINZA);
-      doc.text(String(sv.nome || '-').toUpperCase(), cX[0] + 8, y, { maxWidth: colP[0] - 12 });
-
-      doc.setFontSize(8);
-      ink(CINZA2);
-      const desc = doc.splitTextToSize(String(sv.desc || '-'), colP[1] - 12);
-      doc.text(desc, cX[1] + 6, y - 0.5);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      ink(CINZA);
-      doc.text(sv.valor ? 'R$ ' + sv.valor : '-', cX[2] + colP[2] - 6, y, { align: 'right' });
+      const rowTop = top + 11 + i * rowH;
+      if (i > 0) doc.line(M + 4, rowTop, W - M - 4, rowTop);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); ink(BRANCO);
+      doc.text(String(sv.nome || '-').toUpperCase(), cX0, rowTop + 7, { maxWidth: cX1 - cX0 - 4 });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); ink(CINZA);
+      const desc = doc.splitTextToSize(String(sv.desc || '-'), cX2 - cX1 - 6);
+      doc.text(desc, cX1, rowTop + 7);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); ink(BRANCO);
+      doc.text(sv.valor ? 'R$ ' + sv.valor : '-', endX, rowTop + 7, { align: 'right' });
     });
 
-    // ── Total em pílula azul ──
-    const totY = tY + boxH + 10;
-    const tw = 88, th = 14;
-    fill(AZUL);
-    doc.roundedRect(W - M - tw, totY, tw, th, th / 2, th / 2, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13);
-    ink(BRANCO);
-    doc.text('TOTAL:', W - M - tw + 7, totY + 9.2);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text(totalFmt, W - M - 7, totY + 9.2, { align: 'right' });
+    // ── Total em card preto com contorno amarelo ──
+    const totTop = top + cardH + 8;
+    card(M, totTop, CW, 22, 5, AMARELO_BG, AMARELO);
+    rotulo('TOTAL', M + 7, totTop + 9, null, AMARELO);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(18); ink(AMARELO);
+    doc.text(totalFmt, W - M - 7, totTop + 15, { align: 'right' });
 
-    // ── Observação à esquerda ──
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    ink(CINZA);
-    space(1.2);
-    const obsY = totY + th + 12;
-    doc.text('OBSERVAÇÃO:', M, obsY);
-    space(0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9.5);
+    // ── Observação ──
+    const obsY = totTop + 22 + 12;
+    rotulo('OBSERVAÇÃO', M, obsY, null, [90, 95, 104]);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); ink(PRETO);
     doc.text(doc.splitTextToSize('Este recibo serve como comprovante de pagamento realizado e recebido.', CW), M, obsY + 6);
 
-    // ── Versículo centralizado no rodapé ──
-    doc.setFont('helvetica', 'italic');
-    doc.setFontSize(11);
-    ink(CINZA);
+    // ── Rodapé ──
+    draw(LINHA); doc.setLineWidth(0.3);
+    doc.line(M, H - 52, W - M, H - 52);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(10.5); ink([90, 95, 104]);
     doc.text('Seja feita a tua vontade, assim na terra como no céu.', W / 2, H - 42, { align: 'center' });
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    ink(CINZA2);
-    space(1);
-    doc.text('MATEUS 6:10', W / 2, H - 35, { align: 'center' });
-    space(0);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); ink([130, 136, 146]); space(1);
+    doc.text('MATEUS 6:10', W / 2, H - 36, { align: 'center' }); space(0);
 
     return doc;
 }
@@ -7336,12 +7347,14 @@ function openPagoModal(clienteId, mesKey){
 }
 
 async function savePagamento(){
-  const valorRaw=document.getElementById('pgmto-valor').value.replace(/\./g,'').replace(',','.');
-  const valor=parseFloat(valorRaw)||0;
+  const valorTxt=document.getElementById('pgmto-valor').value.trim();
+  const valorRaw=valorTxt.replace(/\./g,'').replace(',','.');
+  const valor=parseFloat(valorRaw);
   const data=document.getElementById('pgmto-data').value;
   const forma=document.getElementById('pgmto-forma').value;
   const obs=document.getElementById('pgmto-obs').value.trim();
-  if(!valor){ toast('Informe o valor recebido.','err'); return; }
+  /* V107: 0,00 é aceito (pagamento sem valor); só bloqueia campo vazio, texto inválido ou negativo */
+  if(!valorTxt || isNaN(valor) || valor<0){ toast('Informe o valor recebido (use 0,00 se não houve valor).','err'); return; }
   if(!data){ toast('Informe a data do pagamento.','err'); return; }
   const btn=document.querySelector('#pgmto-content .btn-primary');
   setSyncStatus('saving');
@@ -9837,6 +9850,18 @@ html[data-rail="open"] .logo-mark-wrap,html[data-rail="open"] .brand-logo-img{wi
 #sec-hoje .ds-stopwatch-btn{padding:7px 6px;font-size:10px}}
 @media(prefers-reduced-motion:reduce){#sec-hoje .ds-stopwatch-btn{transition:none !important}}
 </style>
+<style id="ds-v107-cards-largura">
+/* V107: com 3 indicadores e 2 cartões de prioridade, os cartões ocupam toda a linha */
+html[data-theme]:not(#v59) #sec-hoje .kpi-strip{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+#sec-hoje #v100-focus-grid.v100-focus-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+@media (max-width:720px){
+  html[data-theme]:not(#v59) #sec-hoje .kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  html[data-theme]:not(#v59) #sec-hoje .kpi-strip > .kpi:nth-child(3){grid-column:1 / -1 !important}
+}
+@media (max-width:560px){
+  #sec-hoje #v100-focus-grid.v100-focus-grid{grid-template-columns:1fr !important}
+}
+</style>
 
 
 <script id="ds-v99-stopwatch">
@@ -9917,5 +9942,5 @@ html[data-rail="open"] .logo-mark-wrap,html[data-rail="open"] .brand-logo-img{wi
 <div class="v100-snackbar" id="v100-snackbar" role="status" aria-live="polite" hidden><span id="v100-snackbar-msg"></span><button type="button" id="v100-snackbar-undo" onclick="v100UndoTask()" hidden>Desfazer</button><button type="button" aria-label="Fechar aviso" class="v100-snackbar-x" onclick="v100HideSnackbar()"><i class="ti ti-x"></i></button></div>
 <link rel="stylesheet" href="v100.css?v=105">
 <link rel="stylesheet" href="v102.css?v=106">
-<script src="v100.js?v=105"></script>
+<script src="v100.js?v=107"></script>
 </body></html>
